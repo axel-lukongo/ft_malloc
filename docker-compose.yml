@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  malloc:
+    image: malloc
+    build: .
+    volumes:
+      - ".:/malloc"
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: /bin/bash
+
+volumes:
+  logger:

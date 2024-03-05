@@ -6,7 +6,7 @@
 /*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/22 15:36:07 by alukongo          #+#    #+#             */
-/*   Updated: 2024/03/04 20:41:44 by alukongo         ###   ########.fr       */
+/*   Updated: 2024/03/05 17:23:17 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 int		ft_strlen(char *s);
 int		ft_putchar(char c);
 int		ft_putstr(char *str);
-int		ft_putnbr(int nbr);
+// void		ft_putnbr(int nbr);
 int		ft_putnbr_base(int nbr, char *base);
 int		ft_unsigned(unsigned int nb);
 // char	*ft_uitoa(unsigned int nb);

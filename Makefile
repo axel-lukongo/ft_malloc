@@ -48,6 +48,12 @@ re: clean all
 
 .PHONY: all clean re test symlink
 
+
+
+
+
+
+
 # up:
 # 		gcc -g -c MemoryManagerTools.c -o mm_tools.o
 # 		gcc -g -c MemoryManager.c -o mm.o
@@ -56,7 +62,14 @@ re: clean all
 # 		gcc -g -c show_alloc_mem.c -o show_alloc_mem.o
 # 		gcc -g -c ft_free.c -o ft_free.o
 # 		gcc -g -c test_app.c -o test_app.o
-# 		gcc -g mm_tools.o mm.o ft_realloc.o show_alloc_mem.o ft_malloc.o ft_free.o test_app.o -o exe
+# 		gcc -g -c ft_memset.c -o mem.o
+# 		gcc -g -c ft_memcpy.c -o memc.o
+# 		gcc -g -c ft_printf/ft_printf.c -o fprintf.o
+# 		gcc -g -c ft_printf/ft_printf_utils.c -o fprintfu.o
+# 		gcc -g -c ft_printf/print_hex.c -o printHex.o
+# 		gcc -g -c ft_printf/print_unsigned_int.c -o printUInt.o
+# 		gcc -g -c ft_printf/print_ptr.c -o printPtr.o
+# 		gcc -g mm_tools.o mm.o ft_realloc.o printPtr.o printUInt.o printHex.o fprintfu.o fprintf.o memc.o mem.o show_alloc_mem.o ft_malloc.o ft_free.o test_app.o -o exe
 # 		./exe
 
 # docker:
@@ -74,8 +87,8 @@ re: clean all
 # 		sudo docker ps -a
 
 # clean:
+# 		rm exe
 # 		rm *.o
-# 		rm *.so
 
 # stop-docker:	down
 # 		sudo docker system prune -af

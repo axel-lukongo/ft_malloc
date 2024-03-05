@@ -6,7 +6,7 @@
 /*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/22 15:35:54 by alukongo          #+#    #+#             */
-/*   Updated: 2024/03/04 20:21:33 by alukongo         ###   ########.fr       */
+/*   Updated: 2024/03/05 17:24:35 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,27 @@ int	ft_putstr(char *str)
 // 		lb += ft_putchar('-');
 // 		nbr *= -1;
 // 	}
-// 	str = ft_uitoa(nbr);
+  
+// 	// str = ft_uitoa(nbr);
 // 	lb += ft_putstr(str);
-// 	free(str);
+// 	// free(str);
 // 	return (lb);
+// }
+
+// void	ft_putnbr(int nb)
+// {
+// 	unsigned int	nbr;
+// 	if (nb < 0)
+// 	{
+// 		ft_putchar('-');
+// 		nb = nb * (-1);
+// 	}
+// 	nbr = (unsigned int)nb;
+// 	if (nbr <= 9)
+// 		ft_putchar(nbr + '0');
+// 	if (nbr >= 10)
+// 	{
+// 		ft_putnbr (nbr / 10);
+// 		ft_putchar(nbr % 10 + '0');
+// 	}
 // }

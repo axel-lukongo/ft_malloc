@@ -13,13 +13,13 @@ void * ft_realloc(void *ptr, int new_size){
   void * new_alloc;
 
   if(ptr == NULL){
-    return ft_malloc(new_size);
+    return malloc(new_size);
   }
   else if(ptr != NULL && new_size == 0){
     ft_free(ptr);
   }
   else if(new_size > 0){
-    new_alloc = ft_malloc(new_size);
+    new_alloc = malloc(new_size);
     if(new_size > meta_data->size_of_block)
       ft_memcpy(new_alloc, ptr, meta_data->size_of_block);
     else

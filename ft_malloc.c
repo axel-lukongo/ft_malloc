@@ -12,7 +12,7 @@
  * @param units the size that we want allocate
  * @return void* 
  */
-void * ft_malloc(size_t size){
+void * malloc(size_t size){
   //step 1:
   if (SYSTEM_PAGE_SIZE == 0){
       mm_init();

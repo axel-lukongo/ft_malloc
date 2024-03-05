@@ -141,6 +141,6 @@ void free_and_delete_mv_page(vm_page_t * vm_page);
 void show_alloc_mem();
 void * ft_realloc(void *ptr, int new_size);
 void ft_free(void *ptr);
-void * ft_malloc(size_t size);
+void * malloc(size_t size);
 void	*ft_memset( void *pointer, int value, size_t count );
 void	*ft_memcpy(void *dest, const void *src, size_t n);

@@ -6,7 +6,7 @@
 /*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:43:15 by alukongo          #+#    #+#             */
-/*   Updated: 2024/03/04 20:21:51 by alukongo         ###   ########.fr       */
+/*   Updated: 2024/03/05 17:10:47 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,25 @@ int	nb_digit(unsigned int nb, int base)
 	}
 	return (i);
 }
-
+// #include <stdlib.h>
 // char	*ft_uitoa(unsigned int nb)
 // {
 // 	int		i;
-// 	char	*str;
+// 	char	str[10000];
 
 // 	i = nb_digit(nb, 10);
 // 	if (i == 0)
 // 		i = 1;
-// 	str = malloc(sizeof(char) * i + 1);
-// 	if (!str)
-// 		return (NULL);
+// 	// str = malloc(sizeof(char) * i + 1);
+// 	// if (!str)
+// 	// 	return (NULL);
 // 	str[i] = '\0';
 // 	while (i > 0)
 // 	{
 // 		str[--i] = (nb % 10) + '0';
 // 		nb = nb / 10;
 // 	}
+//   // printf("==== %s ===== %d =====\n", str, nb);
 // 	return (str);
 // }
 

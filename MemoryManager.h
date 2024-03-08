@@ -139,8 +139,8 @@ int mm_get_hard_internal_memory_frag_size(block_meta_data_t *first, block_meta_d
 void mm_union_free_block(block_meta_data_t *first, block_meta_data_t *second);
 void free_and_delete_mv_page(vm_page_t * vm_page);
 void show_alloc_mem();
-void * ft_realloc(void *ptr, int new_size);
-void ft_free(void *ptr);
+void * realloc(void *ptr, size_t new_size);
+void free(void *ptr);
 void * malloc(size_t size);
 void	*ft_memset( void *pointer, int value, size_t count );
 void	*ft_memcpy(void *dest, const void *src, size_t n);

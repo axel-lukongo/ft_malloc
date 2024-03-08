@@ -47,7 +47,7 @@ block_meta_data_t * mm_free_blocks(block_meta_data_t * block_to_free){
 }
 
 
-void ft_free(void *ptr){
+void free(void *ptr){
   block_meta_data_t *meta_data =(block_meta_data_t *)((char *)ptr - sizeof(block_meta_data_t));
   if(ptr && meta_data->is_free == FALSE){
     mm_free_blocks(meta_data);

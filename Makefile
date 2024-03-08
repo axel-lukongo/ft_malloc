@@ -72,11 +72,11 @@ re: clean all
 # 		gcc -g mm_tools.o mm.o ft_realloc.o printPtr.o printUInt.o printHex.o fprintfu.o fprintf.o memc.o mem.o show_alloc_mem.o ft_malloc.o ft_free.o test_app.o -o exe
 # 		./exe
 
-# docker:
-# 		# sudo systemctl restart docker 
-# 		sudo docker pull debian:latest
-# 		sudo docker-compose -f docker-compose.yml build #--no-cache
-# 		sudo docker-compose -f docker-compose.yml up --force-recreate -d #--force-recreate
+docker:
+		# sudo systemctl restart docker 
+		sudo docker pull debian:latest
+		sudo docker-compose -f docker-compose.yml build #--no-cache
+		sudo docker-compose -f docker-compose.yml up --force-recreate -d #--force-recreate
 
 
 # down:
@@ -96,7 +96,7 @@ re: clean all
 
 # re : 	clean up
 
-# malloc:
-# 		sudo docker exec -it malloc-malloc-1 bash
+malloc:
+		sudo docker exec -it malloc-malloc-1 bash
 
 # .PHONY: start stop re ps clean%

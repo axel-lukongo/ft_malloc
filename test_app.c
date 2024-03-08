@@ -20,20 +20,21 @@ int main(){
   }
   ft_printf("emp: %s\n", emp);
   ft_printf("-\n-\n");
-  ft_free(emp);
-  ft_free(test2);
-  ft_free(test1);
-  ft_free(test3);
+  free(emp);
+  free(test2);
+  free(test1);
+  free(test3);
   show_alloc_mem();
   ft_printf("-\n-\n");
-  ft_free(test4);
-  ft_free(test5);
+  free(test4);
+  free(test5);
+  test6 = realloc(test6, 300);
   show_alloc_mem();
   ft_printf("-\n-\n");
-  ft_free(test6);
-  ft_free(test7);
-  ft_free(test8);
-  ft_free(test9);
+  free(test6);
+  free(test7);
+  free(test8);
+  free(test9);
   show_alloc_mem();
   return 0;
 

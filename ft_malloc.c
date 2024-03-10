@@ -23,7 +23,7 @@ void * malloc(size_t size){
 
   // step 2:
   if ((size + sizeof(block_meta_data_t)) > mm_max_page_allocatable_memory(1)){
-    ft_printf("Error: Memory requested exceeds page size\n");
+    // ft_printf("Error: Memory requested exceeds page size\n");
     return NULL;
   }
 

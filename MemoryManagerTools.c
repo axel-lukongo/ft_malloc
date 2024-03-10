@@ -117,6 +117,8 @@ int mm_is_vm_page_empty(vm_page_t * vm_page){
   block_meta_data_t *block_meta = &vm_page->meta_block;
 
   ITERATE_VM_PAGE_META_BLOCK_BEGIN(vm_page, block_meta)
+    if(block_meta && block_meta->is_free > TRUE)
+      return TRUE;
     if(block_meta && block_meta->is_free==FALSE)
       return FALSE;
   ITERATE_VM_PAGE_META_BLOCK_END(vm_page, block_meta)

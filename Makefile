@@ -77,6 +77,7 @@ docker:
 		sudo docker pull debian:latest
 		sudo docker-compose -f docker-compose.yml build #--no-cache
 		sudo docker-compose -f docker-compose.yml up --force-recreate -d #--force-recreate
+		sudo docker exec -it malloc-malloc-1 bash
 
 
 down:
@@ -96,7 +97,7 @@ stop-docker:	down
 
 re : 	clean up
 
-malloc:
-		sudo docker exec -it malloc-malloc-1 bash
+# malloc:
+#		sudo docker exec -it malloc-malloc-1 bash
 
-.PHONY: start stop re ps clean%
+# .PHONY: start stop re ps clean%

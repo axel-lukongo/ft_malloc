@@ -7,7 +7,7 @@
 
 #define TRUE 1
 #define FALSE 0
-
+#define SIZE_OF_META_BLOCK 56
 struct vm_page_family_s;
 
 typedef struct vm_page_family_s{

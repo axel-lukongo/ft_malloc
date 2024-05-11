@@ -19,7 +19,8 @@ void mm_init(){
 }
 
 
-
+#include <sys/mman.h>
+#include<stdio.h>
 
 /**
  * Allocates a new virtual memory page from the kernel.
@@ -28,13 +29,14 @@ void mm_init(){
  * @return A pointer to the allocated memory, or NULL if the allocation failed.
  */
 static void * mm_get_new_vm_page_from_kernel(int units){
-  char * vm_page = mmap(0, units * SYSTEM_PAGE_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE,0,0);
+  char * vm_page = mmap(0, units, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE,0,0);
 
   if(vm_page == MAP_FAILED){
     ft_printf("mm_get_new_vm_page_from_kernel failed\n");
     return NULL;
   }
-  ft_memset(vm_page, 0, units * SYSTEM_PAGE_SIZE);
+
+  ft_memset(vm_page, 0, units);
   return (void *)vm_page;
 }
 
@@ -118,7 +120,9 @@ void mm_instantiate_new_page_family(char * name_of_struct, uint32_t size_of_stru
 
 //that return me the size of a free data_block of an empty vm page
 uint32_t mm_max_page_allocatable_memory(int units){
-  return (uint32_t)((SYSTEM_PAGE_SIZE * units) - offset_of(vm_page_t, page_memory));
+  //formule to know the size of the allocation made by mmap
+  size_t allocated_size = (((units+SIZE_OF_META_BLOCK) + SYSTEM_PAGE_SIZE - 1) / SYSTEM_PAGE_SIZE) * SYSTEM_PAGE_SIZE;
+  return (uint32_t)(allocated_size);
 }
 
 
@@ -129,13 +133,13 @@ uint32_t mm_max_page_allocatable_memory(int units){
  * @param vm_page_family The page family to allocate the page for.
  * @return A pointer to the allocated virtual memory page.
  */
-vm_page_t * allocate_vm_page(vm_page_family_t * vm_page_family){
+vm_page_t * allocate_vm_page(vm_page_family_t * vm_page_family, uint32_t size){
 
-  vm_page_t * vm_page = mm_get_new_vm_page_from_kernel(1);
+  vm_page_t * vm_page = mm_get_new_vm_page_from_kernel(size+SIZE_OF_META_BLOCK);
 
   MARK_PAGE_EMPTY(vm_page);
 
-  vm_page->meta_block.size_of_block = mm_max_page_allocatable_memory(1);
+  vm_page->meta_block.size_of_block = mm_max_page_allocatable_memory(size+SIZE_OF_META_BLOCK);
   vm_page->meta_block.is_free = TRUE;
 
   vm_page->meta_block.offset = offset_of(vm_page_t, meta_block); 
@@ -285,7 +289,7 @@ block_meta_data_t * mm_allocate_free_data_block(vm_page_family_t *vm_page_family
 
   //********** case 1:
   if(vm_page == NULL || block_meta_data->size_of_block < size){
-    vm_page = allocate_vm_page(vm_page_family);
+    vm_page = allocate_vm_page(vm_page_family, size);
     status = mm_split_free_data_block_for_allocation(vm_page_family, &vm_page->meta_block, size);
     if(status)
       return &vm_page->meta_block;

@@ -80,7 +80,7 @@ int show_SMALL(vm_page_family_t *pg_family){
       ITERATE_VM_PAGE_BEGIN(pg_family, vm_page)
 
         ITERATE_VM_PAGE_META_BLOCK_BEGIN(vm_page, block_meta)
-        if(block_meta->is_free==FALSE && (block_meta->size_of_block > 100 && block_meta->size_of_block < 1000)){
+        if(block_meta->is_free==FALSE && (block_meta->size_of_block >= 100 && block_meta->size_of_block < 4000)){
             ft_print_address(block_meta+sizeof(vm_page_family_t));
             write(1," - ", 3);
             ft_print_address(block_meta+sizeof(vm_page_family_t)+block_meta->size_of_block);
@@ -105,7 +105,7 @@ int show_LARGE(vm_page_family_t *pg_family){
       ITERATE_VM_PAGE_BEGIN(pg_family, vm_page)
 
         ITERATE_VM_PAGE_META_BLOCK_BEGIN(vm_page, block_meta)
-        if(block_meta->is_free==FALSE && (block_meta->size_of_block > 1000 && block_meta->size_of_block < 4009)){
+        if(block_meta->is_free==FALSE && (block_meta->size_of_block >= 4000 )){
             ft_print_address(block_meta+sizeof(vm_page_family_t));
             write(1," - ", 3);
             ft_print_address(block_meta+sizeof(vm_page_family_t)+block_meta->size_of_block);

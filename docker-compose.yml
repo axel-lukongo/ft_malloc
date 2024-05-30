@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  malloc:
-    image: malloc
+  malloc2:
+    image: malloc2
     build: .
     volumes:
       - ".:/malloc"

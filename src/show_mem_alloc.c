@@ -66,7 +66,7 @@ inline static void print_mem_info(void *start, void *end, long size)
 
 static void print_zone_infos(t_zone_type zone_type, t_bool extra_infos)
 {
-    t_memory_zone      *chosen_zone;
+    t_vm_page      *chosen_zone;
     t_meta_block *block_hdr;
 
     chosen_zone = GET_ZONE_BY_TYPE(zone_type);
@@ -78,24 +78,24 @@ static void print_zone_infos(t_zone_type zone_type, t_bool extra_infos)
         return ;
     if (zone_type == LARGE_ZONE)
     {
-        for (t_memory_zone *zone_head = chosen_zone; zone_head; zone_head = zone_head->next)
+        for (t_vm_page *zone_head = chosen_zone; zone_head; zone_head = zone_head->next)
         {
             print_mem_info(GET_L_MEMORY_BLOCK(zone_head), zone_head + zone_head->size, zone_head->size);
             if (extra_infos)
-                print_hex((unsigned char *)GET_L_MEMORY_BLOCK(zone_head), zone_head->size - sizeof(t_memory_zone));
+                print_hex((unsigned char *)GET_L_MEMORY_BLOCK(zone_head), zone_head->size - sizeof(t_vm_page));
         }
     }
     else
     {
-        for (t_memory_zone *zone_head = chosen_zone; zone_head; zone_head = zone_head->next)
+        for (t_vm_page *zone_head = chosen_zone; zone_head; zone_head = zone_head->next)
         {
-            block_hdr = GET_ZONE_FIRST_HEADER(zone_head);
-            while (IS_ADDR_IN_ZONE(zone_head, GET_NEXT_HEADER(block_hdr, block_hdr->size)))
+            block_hdr = GET_ZONE_FIRST_META_BLOCK(zone_head);
+            while (IS_ADDR_IN_ZONE(zone_head, GET_NEXT_META_BLOCK(block_hdr, block_hdr->size)))
             {
-                print_mem_info(GET_MEMORY_BLOCK(block_hdr), GET_BLOCK_FOOTER(block_hdr), block_hdr->size - sizeof(t_ftr_block));
+                print_mem_info(GET_VM_PAGE(block_hdr), GET_BLOCK_FOOTER(block_hdr), block_hdr->size - sizeof(t_ftr_block));
                 if (block_hdr->is_free == false && extra_infos)
-                    print_hex((unsigned char *)GET_MEMORY_BLOCK(block_hdr), block_hdr->size - sizeof(t_ftr_block));
-                block_hdr = GET_NEXT_HEADER(block_hdr, block_hdr->size);
+                    print_hex((unsigned char *)GET_VM_PAGE(block_hdr), block_hdr->size - sizeof(t_ftr_block));
+                block_hdr = GET_NEXT_META_BLOCK(block_hdr, block_hdr->size);
             }
         }
     }

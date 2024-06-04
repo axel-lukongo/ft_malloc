@@ -23,13 +23,13 @@
 #define EFFECTIVE_SIZE(x) (x + METADATA_SIZE)
 #define CEIL_DIV(a, b) ((a / b) + ((a % b) != 0))
 
-#define SMALL_ZONE_SIZE (CEIL_DIV(((100 * EFFECTIVE_SIZE(SMALL_MAX)) + sizeof(t_memory_zone) + sizeof(t_meta_block)), getpagesize()) * getpagesize())
-#define TINY_ZONE_SIZE  (CEIL_DIV(((100 * EFFECTIVE_SIZE(TINY_MAX)) + sizeof(t_memory_zone) + sizeof(t_meta_block)), getpagesize()) * getpagesize())
-#define LARGE_ZONE_SIZE(x) ((CEIL_DIV((x + sizeof(t_memory_zone)), getpagesize())) * getpagesize())
+#define SMALL_ZONE_SIZE (CEIL_DIV(((100 * EFFECTIVE_SIZE(SMALL_MAX)) + sizeof(t_vm_page) + sizeof(t_meta_block)), getpagesize()) * getpagesize())
+#define TINY_ZONE_SIZE  (CEIL_DIV(((100 * EFFECTIVE_SIZE(TINY_MAX)) + sizeof(t_vm_page) + sizeof(t_meta_block)), getpagesize()) * getpagesize())
+#define LARGE_ZONE_SIZE(x) ((CEIL_DIV((x + sizeof(t_vm_page)), getpagesize())) * getpagesize())
 
 #define ZONE_SIZE(type) (type == TINY_ZONE ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE)
 
-#define FIRST_BLOCK_SIZE(type) (ZONE_SIZE(type) - sizeof(t_memory_zone) - METADATA_SIZE)
+#define FIRST_BLOCK_SIZE(type) (ZONE_SIZE(type) - sizeof(t_vm_page) - METADATA_SIZE)
 
 #define GET_RIGHT_ZONE(size) (IS_TINY(size) ? g_zones.tiny : IS_SMALL(size) ? g_zones.small : g_zones.large)
 #define GET_ZONE_BY_TYPE(type) (type == TINY_ZONE ? g_zones.tiny : type == SMALL_ZONE ? g_zones.small : g_zones.large)
@@ -38,17 +38,17 @@
 #define GET_ZONE_ADDR(type) (type == TINY_ZONE ? &g_zones.tiny : type == SMALL_ZONE ? &g_zones.small : &g_zones.large)
 #define GET_ZONE_NAME(type) (type == TINY_ZONE ? "TINY" : type == SMALL_ZONE ? "SMALL" : "LARGE")
 
-#define GET_ZONE_FIRST_HEADER(zone) ((t_meta_block *)((void *)zone + sizeof(t_memory_zone) + sizeof(t_meta_block)))
+#define GET_ZONE_FIRST_META_BLOCK(zone) ((t_meta_block *)((void *)zone + sizeof(t_vm_page) + sizeof(t_meta_block)))
 
 #define GET_BLOCK_HEADER(block) ((void *)block - sizeof(t_meta_block))
-#define GET_LBLOCK_HEADER(block) ((void *)block - sizeof(t_memory_zone))
-#define GET_MEMORY_BLOCK(hdr) ((void *)hdr + sizeof(t_meta_block))
-#define GET_L_MEMORY_BLOCK(zone) ((void *)zone + sizeof(t_memory_zone))
+#define GET_LBLOCK_HEADER(block) ((void *)block - sizeof(t_vm_page))
+#define GET_VM_PAGE(hdr) ((void *)hdr + sizeof(t_meta_block))
+#define GET_L_MEMORY_BLOCK(zone) ((void *)zone + sizeof(t_vm_page))
 #define GET_BLOCK_FOOTER(hdr) ((t_ftr_block *)((void *)hdr + hdr->size + sizeof(t_meta_block) - sizeof(t_ftr_block)))
-#define GET_NEXT_HEADER(hdr, size) ((t_meta_block *)((void *)hdr + sizeof(t_meta_block) + size))
+#define GET_NEXT_META_BLOCK(hdr, size) ((t_meta_block *)((void *)hdr + sizeof(t_meta_block) + size))
 #define GET_PREV_HEADER(hdr) ((t_meta_block *)((void *)hdr - *((t_ftr_block *)((void *)hdr - sizeof(t_ftr_block))) - sizeof(t_meta_block)))
 #define GET_BLOCK_SIZE(hdr) (hdr->size - sizeof(t_ftr_block))
-#define GET_L_BLOCK_SIZE(zone) (zone->size - sizeof(t_memory_zone))
+#define GET_L_BLOCK_SIZE(zone) (zone->size - sizeof(t_vm_page))
 
 
 #define PRINT_ADDR(addr) write(1, "0x", 2); print_base((long long)addr, 16)
@@ -98,23 +98,23 @@ typedef struct      s_meta_block
 #endif
 
 // structure representing a memory zone (tiny, small or large)
-typedef struct      s_memory_zone
+typedef struct      s_vm_page
 {
     size_t          size;     // pointer to the end of the zone
-    struct s_memory_zone   *next;      // pointer to the next zone
-    struct s_memory_zone   *prev;      // pointer to the previous zone
+    struct s_vm_page   *next;      // pointer to the next zone
+    struct s_vm_page   *prev;      // pointer to the previous zone
     uint64_t        padding; // padding
-}                   t_memory_zone;
+}                   t_vm_page;
 
 // structure containing the different zones
 typedef struct      s_memory_zones
 {
-    t_memory_zone          *tiny;      // pointer to the tiny zone
-    t_memory_zone          *tiny_tail;      // pointer to the next zone
-    t_memory_zone          *small;     // pointer to the small zone
-    t_memory_zone          *small_tail;      // pointer to the next zone
-    t_memory_zone          *large;     // pointer to the large zone
-    t_memory_zone          *large_tail;      // pointer to the next zone
+    t_vm_page          *tiny;      // pointer to the tiny zone
+    t_vm_page          *tiny_tail;      // pointer to the next zone
+    t_vm_page          *small;     // pointer to the small zone
+    t_vm_page          *small_tail;      // pointer to the next zone
+    t_vm_page          *large;     // pointer to the large zone
+    t_vm_page          *large_tail;      // pointer to the next zone
 }                   t_memory_zones;
 
 extern t_memory_zones          g_zones;
@@ -137,7 +137,7 @@ void            set_block_metadata(t_meta_block *memory_block, t_bool is_free, s
 t_bool          is_allocated(void *ptr);
 size_t          get_alligned_size(size_t size);
 t_meta_block*    search_in_zone(void *ptr, t_zone_type zone_type);
-t_memory_zone*         search_in_large_zone(void *ptr);
+t_vm_page*         search_in_large_zone(void *ptr);
 
 void print_base(long long number, unsigned short base);
 #endif

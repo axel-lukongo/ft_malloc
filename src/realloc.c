@@ -11,7 +11,7 @@ void    *ft_realloc(void *ptr, size_t size)
 {
     void        *new_block;
     t_meta_block *old_header;
-    t_memory_zone      *zone;
+    t_vm_page      *zone;
     size_t      leftover;
 
     old_header = NULL;
@@ -30,7 +30,7 @@ void    *ft_realloc(void *ptr, size_t size)
         leftover = old_header->size - size;
         if (size <= old_header->size && leftover > (ssize_t)METADATA_SIZE)
         {
-            set_block_metadata(GET_NEXT_HEADER(old_header, size), true, leftover - sizeof(t_meta_block));
+            set_block_metadata(GET_NEXT_META_BLOCK(old_header, size), true, leftover - sizeof(t_meta_block));
             set_block_metadata(old_header, false, size);
             return ptr;
         }

@@ -20,11 +20,11 @@ static void merge_meta_blocks(t_meta_block *first_block, t_meta_block *second_bl
  */
 static void free_large_block(void *ptr)
 {
-    t_memory_zone *zone;
-    t_memory_zone **zone_tail;
+    t_vm_page *zone;
+    t_vm_page **zone_tail;
 
     zone_tail = GET_ZONE_TAIL_ADDR(LARGE_ZONE);
-    for (t_memory_zone **curr_zone = GET_ZONE_ADDR(LARGE_ZONE); *curr_zone; curr_zone = &(*curr_zone)->next)
+    for (t_vm_page **curr_zone = GET_ZONE_ADDR(LARGE_ZONE); *curr_zone; curr_zone = &(*curr_zone)->next)
     {
         if((void *)GET_L_MEMORY_BLOCK(*curr_zone) == ptr)
         {
@@ -59,22 +59,22 @@ static void free_large_block(void *ptr)
  */
 static void free_block(t_meta_block *meta_block, t_zone_type zone_type)
 {
-    t_memory_zone *zone;
-    t_memory_zone **zone_tail;
+    t_vm_page *zone;
+    t_vm_page **zone_tail;
 
     zone_tail = GET_ZONE_TAIL_ADDR(zone_type);
     meta_block->is_free = true;
-    for (t_memory_zone **curr_zone = GET_ZONE_ADDR(zone_type); *curr_zone; curr_zone = &(*curr_zone)->next)
+    for (t_vm_page **curr_zone = GET_ZONE_ADDR(zone_type); *curr_zone; curr_zone = &(*curr_zone)->next)
     {
         if (IS_ADDR_IN_ZONE((*curr_zone), meta_block))
         {
-            if (IS_ADDR_IN_ZONE((*curr_zone), GET_NEXT_HEADER(meta_block, meta_block->size)))
-                merge_meta_blocks(meta_block, GET_NEXT_HEADER(meta_block, meta_block->size));
+            if (IS_ADDR_IN_ZONE((*curr_zone), GET_NEXT_META_BLOCK(meta_block, meta_block->size)))
+                merge_meta_blocks(meta_block, GET_NEXT_META_BLOCK(meta_block, meta_block->size));
             if (IS_ADDR_IN_ZONE((*curr_zone), GET_PREV_HEADER(meta_block)))
                 merge_meta_blocks(GET_PREV_HEADER(meta_block), meta_block);
         }
         //if the current meta block is egal to the first meta block that mean my zone is empty
-        if (FIRST_BLOCK_SIZE(zone_type) == GET_ZONE_FIRST_HEADER(*curr_zone)->size)
+        if (FIRST_BLOCK_SIZE(zone_type) == GET_ZONE_FIRST_META_BLOCK(*curr_zone)->size)
         {
             zone = *curr_zone;
             if (GET_ZONE_ADDR(zone_type) == curr_zone)

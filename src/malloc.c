@@ -11,12 +11,12 @@ pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
  * @param size Size of the memory to allocate
  * @return True if allocation was successful, false otherwise
  */
-static t_bool mm_get_new_page_from_kernel(t_memory_zone **zone, t_memory_zone **zone_tail, size_t size)
+static t_bool mm_get_new_page_from_kernel(t_vm_page **zone, t_vm_page **zone_tail, size_t size)
 {
-    t_memory_zone *page_memory;
-    t_memory_zone *zone_tail_tmp;
+    t_vm_page *page_memory;
+    t_vm_page *zone_tail_tmp;
 
-    page_memory = (t_memory_zone *)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    page_memory = (t_vm_page *)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
     if (page_memory == MAP_FAILED)
         return (false);
     page_memory->size = size;
@@ -50,14 +50,14 @@ static t_bool init_new_zone(size_t size)
         status = mm_get_new_page_from_kernel(&g_zones.tiny, &g_zones.tiny_tail, TINY_ZONE_SIZE);
         if (status == false)
             return (false);
-        set_block_metadata(GET_ZONE_FIRST_HEADER(GET_ZONE_TAIL(TINY_ZONE)), true, FIRST_BLOCK_SIZE(TINY_ZONE));
+        set_block_metadata(GET_ZONE_FIRST_META_BLOCK(GET_ZONE_TAIL(TINY_ZONE)), true, FIRST_BLOCK_SIZE(TINY_ZONE));
     }
     else if (IS_SMALL(size))
     {
         status = mm_get_new_page_from_kernel(&g_zones.small, &g_zones.small_tail, SMALL_ZONE_SIZE);
         if (status == false)
             return (false);
-        set_block_metadata(GET_ZONE_FIRST_HEADER(GET_ZONE_TAIL(SMALL_ZONE)), true, FIRST_BLOCK_SIZE(SMALL_ZONE));
+        set_block_metadata(GET_ZONE_FIRST_META_BLOCK(GET_ZONE_TAIL(SMALL_ZONE)), true, FIRST_BLOCK_SIZE(SMALL_ZONE));
     }
     return (true);
 }
@@ -69,7 +69,7 @@ static t_bool init_new_zone(size_t size)
  * @param size Size of the memory to allocate
  * @return Pointer to the allocated memory
  */
-static void *mm_split_free_data_block_for_allocation(t_memory_zone *zone, size_t size)
+static void *mm_split_free_data_block_for_allocation(t_vm_page *zone, size_t size)
 {
     t_meta_block *curr_meta_block;
     t_meta_block *biggest_free_meta_block;
@@ -78,24 +78,24 @@ static void *mm_split_free_data_block_for_allocation(t_memory_zone *zone, size_t
 
     biggest_free_meta_block = NULL;
     aligned_size = get_alligned_size(size);
-    for (t_memory_zone *zone_head = zone; zone_head; zone_head = zone_head->next)
+    for (t_vm_page *zone_head = zone; zone_head; zone_head = zone_head->next)
     {
-        curr_meta_block = GET_ZONE_FIRST_HEADER(zone_head);
+        curr_meta_block = GET_ZONE_FIRST_META_BLOCK(zone_head);
         while (IS_ADDR_IN_ZONE(zone_head, curr_meta_block))
         {
           if (curr_meta_block->is_free && aligned_size <= curr_meta_block->size &&\
               (!biggest_free_meta_block || curr_meta_block->size < biggest_free_meta_block->size))
               biggest_free_meta_block = curr_meta_block;
-          curr_meta_block = GET_NEXT_HEADER(curr_meta_block, curr_meta_block->size);
+          curr_meta_block = GET_NEXT_META_BLOCK(curr_meta_block, curr_meta_block->size);
         }
     }
     if (biggest_free_meta_block)
     {
         leftover_size = biggest_free_meta_block->size - aligned_size;
         if (leftover_size > METADATA_SIZE)
-            set_block_metadata(GET_NEXT_HEADER(biggest_free_meta_block, aligned_size), true, leftover_size - sizeof(t_meta_block));
+            set_block_metadata(GET_NEXT_META_BLOCK(biggest_free_meta_block, aligned_size), true, leftover_size - sizeof(t_meta_block));
         set_block_metadata(biggest_free_meta_block, false, aligned_size);
-        return (GET_MEMORY_BLOCK(biggest_free_meta_block));
+        return (GET_VM_PAGE(biggest_free_meta_block));
     }
     init_new_zone(size);
     return (mm_split_free_data_block_for_allocation(zone, size));
@@ -131,6 +131,7 @@ void *ft_malloc(size_t size)
         return (NULL);
     if (IS_LARGE(size))
         return (get_large_alloc(size));
+    //here i init a new zone only if i don't find i right zone for the size
     if (!GET_RIGHT_ZONE(size) && init_new_zone(size) == false)
         return (NULL);
     return (mm_split_free_data_block_for_allocation(GET_RIGHT_ZONE(size), size));
